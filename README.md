@@ -36,3 +36,6 @@ Notes and security
 
 - Pickle files can execute arbitrary code. Only use models you trust.
 - If the vectorizer or models are missing the UI will flash helpful messages telling you which files are absent.
+
+- this project is been deployed by render - https://phising-site-detection.onrender.com
+- this is the site link .
