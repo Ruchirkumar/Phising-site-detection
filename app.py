@@ -97,7 +97,31 @@ def index():
         return render_template('result.html', url=url_text, model=model_choice, prediction=human, raw=label)
 
     return render_template('index.html', models=models_available)
+from flask import jsonify
 
+@app.route('/check', methods=['GET'])
+def check_api():
+    url_text = request.args.get('url', '').strip()
+    vect, lmodel, mnb = load_artifacts()
+
+    if not url_text or vect is None:
+        return jsonify({"isPhishing": False})
+
+    try:
+        url_processed = preprocess_url(url_text)
+        X = vect.transform([url_processed])
+    except:
+        return jsonify({"isPhishing": False})
+
+    # Default to LogisticRegression if available
+    model = lmodel or mnb
+    if model is None:
+        return jsonify({"isPhishing": False})
+
+    pred = model.predict(X)[0]
+    is_phishing = str(pred).lower() in ['bad', 'phishing', '1', 'true']
+
+    return jsonify({"isPhishing": is_phishing})
 
 if __name__ == '__main__':
     app.run(debug=True)
